@@ -19,11 +19,11 @@ class Mailer
         $mail->Password = PASSWORD_EMAIL;
         $mail->setFrom('automacaobot@gmail.com', utf8_decode('Quebras Automação'));
 
-        if (count($email) > 0) {
-            for ($i = 0; $i < count($email); $i++) {
-                $mail->addAddress($email[$i], explode('@', $email[$i])[0]);
-            }
-        }
+        // if (count($email) > 0) {
+        //     for ($i = 0; $i < count($email); $i++) {
+        //         $mail->addAddress($email[$i], explode('@', $email[$i])[0]);
+        //     }
+        // }
 
         $mail->addAddress('richard.lopes@totvs.com.br', 'Richard');
 

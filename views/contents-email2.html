@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Email content</title>
+    <link href="https://fonts.googleapis.com/css2?family=Gotu&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Gotu', sans-serif;
+        }
+
+        h1 {
+            color: #3E3935;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td,
+        th {
+            text-align: left;
+            padding: 8px;
+        }
+
+        .col-container {
+            display: flex;
+            width: 100%;
+        }
+
+        .col {
+            flex: 1;
+            padding: 16px;
+            margin: 5px;
+        }
+    </style>
+</head>
+
+<body style="max-width: 600px;">
+    <br>
+    <header style="text-align: center;">
+        <img src="https://i.imgur.com/GhLhmeh.png" height="50px">
+        <h1>
+            {$header}
+        </h1>
+        <h3>
+            {$squad}
+        </h3>
+        <div class="col-container">
+            {loop="$releases"}
+            <div class="col" style="width: 200px; background: #dddddd">
+                <h2>{$value.RELEASE}</h2>
+                <p>Total: {$value.TOTAL_QUEBRAS}</p>
+            </div>
+            {/loop}
+        </div>
+        <br>
+        {loop="$releases"}
+        <table>
+            {$quebras = $value}
+            <tr style="background-color: #4D443E; color: white;">
+                <th style="width: 180px;" colspan="1">Release {$quebras.RELEASE} </th>
+                <th colspan="2">Data {$quebras.DATA} </th>
+            </tr>
+            <tr style="background-color: #4D443E; color: white;">
+                <th>Fonte</th>
+                <th>Quantidade</th>
+                <th>CTs</th>
+            </tr>
+            {$cor = true}
+			{loop="$quebras.QUEBRAS"}
+				{if="count($quebras.QUEBRAS.$key) > 0"}
+					{if="count($quebras.QUEBRAS) > 1"}
+					<tr style="background-color: #009CC0; color: white;">
+						<td colspan="3">
+							{$key}
+						</td>
+					</tr>
+					{/if}
+					{loop="$quebras.QUEBRAS.$key"}
+						{if="$cor"}
+							<tr style="background-color: #dddddd;">
+						{else}
+						<tr>
+						{/if}
+							<td style="width: 100px;">{$key}</td>
+							<td style="width: 20px;">{$value.TOTAL}</td>
+							<td>{$value.CTS}</td>
+						</tr>
+						{$cor = !$cor}
+					{/loop}
+				{/if}
+			{/loop}
+            <tr style="background-color: #4D443E; color: white;">
+                <th>Total de fontes: {$quebras.TOTAL_FONTES}</th>
+				<th>Falhou: {$quebras.QTD.FALHOU} </th>
+                <th style="width: 150px;">Passou: {$quebras.QTD.PASSOU} </th>
+            </tr>
+        </table>
+        <br><br><br><br>
+        {/loop}
+	</header>
+	{loop="$mensagens"}
+    <p>{$value}</p>
+	{/loop}
+</body>
+
+</html>

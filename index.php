@@ -20,6 +20,7 @@ $data23 = $advpr->getDatas('12.1.023', $rpo);
 for ($i = 0; $i < count($squads); $i++) {
     $quebras = array();
     $mensagens = array();
+    $equipe = $squads[$i];
     $squad = rawurlencode(trim($squads[$i]["squad"]));
 
     $r27 = $advpr->retExecDiario('12.1.027', $rpo, $data27, $squad);
@@ -44,6 +45,7 @@ for ($i = 0; $i < count($squads); $i++) {
     $key25 = $key($qtd25->data[1], $squads[$i]["squad"]);
     $key23 = $key($qtd23->data[1], $squads[$i]["squad"]);
 
+    // adiciona a qtd de falhas e sucessos
     $add = function ($key, $release, $qtd) {
         if ($key >= 0) {
             $release["QTD"] = array(
@@ -55,12 +57,38 @@ for ($i = 0; $i < count($squads); $i++) {
         }
     };
 
+    // adicionar os nomes das squads
+    $hr = function ($quebras) use ($equipe) {
+        if (isset($equipe["sources"])) {
+            $res = [];
+            foreach ($equipe["sources"] as $equipe => $fontes) {
+                foreach ($fontes as $fonte) {
+                    if (array_key_exists($fonte, $quebras)) {
+                        $res[$equipe][$fonte] = $quebras[$fonte];
+                        unset($quebras[$fonte]);
+                    }
+                }
+            }
+
+            if (count($quebras) > 0) {
+                $res['UNDEFINED'] = $quebras;
+            }
+
+            ksort($res);
+        } else {
+            $res[$equipe["squad"]] = $quebras;
+        }
+
+        return $res;
+    };
+
     $mensagem = function ($data, $qtd, $release) use ($advpr) {
         return 'A execução do release ' . $release . ' (' . $advpr->stringParaData($data) . ') não foi finalizada ou não tiveram quebras. Até o momento, passaram "' . $qtd . '" casos de teste.';
     };
 
     $r27 = $add($key27, $r27, $qtd27);
     if (isset($r27["QUEBRAS"])) {
+        $r27["QUEBRAS"] = $hr($r27["QUEBRAS"]);
         array_push($quebras, $r27);
     } else {
         array_push($mensagens, $mensagem($data27, $r27["QTD"]["PASSOU"], "12.1.27"));
@@ -68,6 +96,7 @@ for ($i = 0; $i < count($squads); $i++) {
 
     $r25 = $add($key25, $r25, $qtd25);
     if (isset($r25["QUEBRAS"])) {
+        $r25["QUEBRAS"] = $hr($r25["QUEBRAS"]);
         array_push($quebras, $r25);
     } else {
         array_push($mensagens, $mensagem($data25, $r25["QTD"]["PASSOU"], "12.1.25"));
@@ -75,6 +104,7 @@ for ($i = 0; $i < count($squads); $i++) {
 
     $r23 = $add($key23, $r23, $qtd23);
     if (isset($r23["QUEBRAS"])) {
+        $r23["QUEBRAS"] = $hr($r23["QUEBRAS"]);
         array_push($quebras, $r23);
     } else {
         array_push($mensagens, $mensagem($data23, $r23["QTD"]["PASSOU"], "12.1.23"));
@@ -85,7 +115,7 @@ for ($i = 0; $i < count($squads); $i++) {
         "scripts" => false,
         "footer" => false,
     ));
-    $html = $page->setTpl("contents-email", array(
+    $html = $page->setTpl("contents-email2", array(
         "header" => "Automação de Testes - " . $rpo,
         "squad" => rawurldecode($squad),
         "releases" => $quebras,
