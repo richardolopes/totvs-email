@@ -6,7 +6,7 @@ class Http
 {
     const MESSAGE = "A conexão com o portal não foi realizada. Verifique a sua conectividade com a VPN ou se o portal está disponível.";
 
-    public static function post(string $url): array
+    public static function post(string $url)
     {
         $ch = curl_init($url);
         curl_setopt_array($ch, [
@@ -19,14 +19,14 @@ class Http
         $response = json_decode(curl_exec($ch));
 
         if ($errno = curl_errno($ch)) {
-            throw new Exception(Http::MESSAGE);
+            throw new \Exception(Http::MESSAGE);
         }
 
         curl_close($ch);
         return $response;
     }
 
-    public static function get(string $url): array
+    public static function get(string $url)
     {
         $ch = curl_init($url);
         curl_setopt_array($ch, [
@@ -37,7 +37,7 @@ class Http
         $response = json_decode(curl_exec($ch));
 
         if ($errno = curl_errno($ch)) {
-            throw new Exception(Http::MESSAGE);
+            throw new \Exception(Http::MESSAGE);
         }
 
         curl_close($ch);

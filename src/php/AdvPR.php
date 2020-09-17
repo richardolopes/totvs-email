@@ -2,6 +2,9 @@
 
 namespace Totvs;
 
+use \Totvs\Http;
+use \Totvs\Util;
+
 class AdvPR
 {
     const RELEASE = 'http://10.171.78.41:8006/rest/filtrosportal/releas/homolog';
@@ -12,93 +15,32 @@ class AdvPR
 
     public function getExec($release, $data, $rpo, $squad)
     {
-        try {
-            $ch = curl_init(Advpr::EXECUCAO . 'Detail/' . $squad . '/BRA/' . $release . '/' . $data . '/' . $rpo . '/Todas');
-            curl_setopt_array($ch, [
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_POST => true,
-                CURLOPT_POSTFIELDS => [
-                    'user' => '',
-                ],
-            ]);
-            $response = json_decode(curl_exec($ch));
-            curl_close($ch);
-
-            return $response;
-        } catch (Exception $e) {
-            return [""];
-        }
+        $response = Http::post(Advpr::EXECUCAO . 'Detail/' . $squad . '/BRA/' . $release . '/' . $data . '/' . $rpo . '/Todas');
+        return $response;
     }
 
     public function getQtdTestes($release, $rpo, $data)
     {
-        try {
-            $ch = curl_init(Advpr::EXECUCAO . 'BRA/2/' . $release . '/' . $data . '/' . $rpo . '/Todas');
-            curl_setopt_array($ch, [
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_POST => true,
-                CURLOPT_POSTFIELDS => [
-                    'user' => '',
-                ],
-            ]);
-            $response = json_decode(curl_exec($ch));
-            curl_close($ch);
-
-            return $response;
-        } catch (Exception $e) {
-            return [""];
-        }
+        $response = Http::post(Advpr::EXECUCAO . 'BRA/2/' . $release . '/' . $data . '/' . $rpo . '/Todas');
+        return $response;
     }
 
     public function getRpos($release)
     {
-        $ch = curl_init(Advpr::RPOS . $release);
-        curl_setopt($ch, CURLOPT_HTTPGET, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $response = json_decode(curl_exec($ch));
-        curl_close($ch);
-
+        $response = Http::get(Advpr::RPOS . $release);
         return $response;
     }
 
     public function getDatas($release, $rpo)
     {
-        $ch = curl_init(Advpr::DATAS . $release . '/' . $rpo . '/Todas');
-        curl_setopt($ch, CURLOPT_HTTPGET, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $response = json_decode(curl_exec($ch));
-        curl_close($ch);
-
-        return $this->maiorData($response);
+        $response = Http::get(Advpr::DATAS . $release . '/' . $rpo . '/Todas');
+        return Util::maiorData($response);
     }
 
     public function getReleases()
     {
-        $ch = curl_init(Advpr::RELEASE);
-        curl_setopt($ch, CURLOPT_HTTPGET, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $response = json_decode(curl_exec($ch));
-        curl_close($ch);
-
+        $response = Http::get(Advpr::RELEASE);
         return $response;
-    }
-
-    public function maiorData($range)
-    {
-        $aux = '';
-
-        for ($i = 0; $i < count($range); $i++) {
-            if ($range[$i]->value > $aux) {
-                $aux = $range[$i]->value;
-            }
-        }
-
-        return $aux;
-    }
-
-    public static function stringParaData($string)
-    {
-        return substr($string, 6, 8) . '/' . substr($string, 4, 2) . '/' . substr($string, 0, 4);
     }
 
     public function getQuebras($erros)
@@ -158,7 +100,7 @@ class AdvPR
 
             $return = array(
                 "RELEASE" => $release,
-                "DATA" => $this->stringParaData($data),
+                "DATA" => Util::stringParaData($data),
                 "QUEBRAS" => $erros["QUEBRAS"],
                 "TOTAL_QUEBRAS" => $erros["TOTAL"],
                 "TOTAL_FONTES" => count($erros["QUEBRAS"]),

@@ -1,13 +1,14 @@
 <?php
 
-require "src" . DIRECTORY_SEPARATOR . "mail.php";
-require "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
+require_once "src" . DIRECTORY_SEPARATOR . "mail.php";
+require_once "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
 
 set_time_limit(1000);
 
 use \Totvs\AdvPR;
 use \Totvs\Mailer;
 use \Totvs\Page;
+use \Totvs\Util;
 
 $advpr = new AdvPR();
 
@@ -71,7 +72,7 @@ for ($i = 0; $i < count($squads); $i++) {
             }
 
             if (count($quebras) > 0) {
-                $res['UNDEFINED'] = $quebras;
+                $res['Equipe não definida'] = $quebras;
             }
 
             ksort($res);
@@ -82,8 +83,8 @@ for ($i = 0; $i < count($squads); $i++) {
         return $res;
     };
 
-    $mensagem = function ($data, $qtd, $release) use ($advpr) {
-        return 'A execução do release ' . $release . ' (' . $advpr->stringParaData($data) . ') não foi finalizada ou não tiveram quebras. Até o momento, passaram "' . $qtd . '" casos de teste.';
+    $mensagem = function ($data, $qtd, $release) {
+        return 'A execução do release ' . $release . ' (' . Util::stringParaData($data) . ') não foi finalizada ou não tiveram quebras. Até o momento, passaram "' . $qtd . '" casos de teste.';
     };
 
     $r27 = $add($key27, $r27, $qtd27);
@@ -115,7 +116,7 @@ for ($i = 0; $i < count($squads); $i++) {
         "scripts" => false,
         "footer" => false,
     ));
-    $html = $page->setTpl("contents-email2", array(
+    $html = $page->setTpl("contents-email", array(
         "header" => "Automação de Testes - " . $rpo,
         "squad" => rawurldecode($squad),
         "releases" => $quebras,
