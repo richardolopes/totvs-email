@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Email content</title>
+    <link href="https://fonts.googleapis.com/css2?family=Gotu&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Gotu', sans-serif;
+        }
+
+        h1 {
+            color: #3E3935;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td,
+        th {
+            text-align: left;
+            padding: 8px;
+        }
+
+        .col-container {
+            display: flex;
+            width: 100%;
+        }
+
+        .col {
+            flex: 1;
+            padding: 16px;
+            margin: 5px;
+        }
+    </style>
+</head>
+
+<body style="max-width: 600px;">
+    <br>
+    <header style="text-align: center;">
+        <img src="https://i.imgur.com/GhLhmeh.png" height="50px">
+        <h1>
+            {$header}
+        </h1>
+        <div class="col-container">
+            {loop="$total"}
+            <div class="col" style="width: 200px; background: #dddddd">
+                <h2>{$key}</h2>
+                <p>Total: {$value}</p>
+            </div>
+            {/loop}
+        </div>
+        <br>
+        {loop="$errors"}
+        {$release = $key}
+        <table>
+            <tr style="background-color: #4D443E; color: white;">
+                <th style="width: 180px;" colspan="3">Release {$release} </th>
+            </tr>
+            {loop="$value"}
+                {$squad = $key}
+                {if="count($value.ERRORS) > 0"}
+                <tr style="background-color: #009CC0; color: white;">
+                    <th colspan="2">{function="convertDate($value.DATE)"} </th>
+                    <th colspan="1">
+                        {$squad}
+                    </th>
+                </tr>
+                <tr style="background-color: #4D443E; color: white;">
+                    <th>Fonte</th>
+                    <th>Quantidade</th>
+                    <th>CTs</th>
+                </tr>
+                {/if}
+            {$cor = true}
+			{loop="$value.ERRORS"}
+                {if="$cor"}
+                    <tr style="background-color: #dddddd;">
+                {else}
+                    <tr>
+                {/if}
+                        <td style="width: 100px;">{$key}</td>
+                        <td style="width: 20px;">{$value.TOTAL}</td>
+                        <td>{$value.CTS}</td>
+                    </tr>
+                {$cor = !$cor}
+            {/loop}
+
+            {if="count($value.ERRORS) > 0"}
+            <tr style="background-color: #4D443E; color: white;">
+                <th>Total de fontes: {function="count($value.ERRORS)"}</th>
+                <th>Falhou: {$value.TOTAL} </th>
+                <th style="width: 200px;">Passou: {$value.SUCCESS}</th>
+            </tr>
+
+            <tr style="background-color: #ffffff;">
+                <td colspan="3">&nbsp;</td>
+			</tr>
+            {/if}
+        {/loop}
+		</table>
+        <br><br>
+        <br><br>
+        {/loop}
+	</header>
+	{loop="$mensagens"}
+    <p>{$value}</p>
+	{/loop}
+</body>
+</html>

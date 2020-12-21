@@ -9,9 +9,9 @@ class Page
     private $tpl; // Para ter acesso em outros metodos.
     private $options = array();
     private $defaults = array( // Variaveis 'padrao'
-        "header" => true,
-        "scripts" => true,
-        "footer" => true,
+        "header" => false,
+        "scripts" => false,
+        "footer" => false,
         "data" => array(), // Variaveis do template.
     );
 

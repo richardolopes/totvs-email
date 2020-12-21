@@ -1,0 +1,43 @@
+
+version: "3"
+
+services:
+  composer:
+    image: composer:1.9
+    command: ["composer", "install"]
+    working_dir: /var/www
+    volumes:
+      - ./app:/var/www
+
+  web:
+    image: nginx:latest
+    restart: always
+    ports:
+      - 1945:80
+    volumes:
+      - ./app:/var/www
+      - ./conf/site.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+      # - mysql
+
+  php:
+    image: php:7.4-fpm
+    volumes:
+      - ./app:/var/www
+    env_file:
+      - .env
+    depends_on:
+      - composer
+
+  # mysql:
+  #   image: mysql:5.7.17
+  #   volumes:
+  #   - ./conf/load.sql:/docker-entrypoint-initdb.d/load.sql
+  #   ports:
+  #   - "3306:3306"
+  #   environment:
+  #   - MYSQL_USER=default
+  #   - MYSQL_PASSWORD=secret
+  #   - MYSQL_ROOT_PASSWORD=secret
+  #   - MYSQL_DATABASE=db_emails
